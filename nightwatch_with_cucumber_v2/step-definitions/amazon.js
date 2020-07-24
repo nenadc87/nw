@@ -7,17 +7,33 @@ Given('I open an Amazon web- page', function () {
 
 Given('I login with user {string} and password {string}', function (string, string2) {
   
-  let signInButtonPath = "//div[@id='nav-flyout-ya-signin']//span[@class='nav-action-inner'][contains(text(),'Sign in')]";
-  client.setTimeout(4000);
-  
-  client.moveTo(document.getElementById("nav-link-accountList"))
-        .useXpath()
-        .waitForElementVisible($x(signInButtonPath),1000)
-        .click($x(signInButtonPath));
+
+  let elem = document.querySelectorAll('#nav-link-accountList');
+  /*let elem = ()=>{
+    var aTags = document.querySelectorAll('.nav-line-1');
+    var searchText = "Hello, Sign in";
+    var found = null;
+
+    for (var i = 0; i < aTags.length; i++) {
+      if (aTags[i].outerText == searchText) {
+        found = aTags[i];
+        break;
+      }
+    return found;
+    }
+  };
+  */
+ 
+  return client.waitForElementVisible(document.querySelectorAll('#nav-link-accountList'),5000)
+        .click(document.querySelectorAll('#nav-link-accountList'))
+        .waitForElementVisible(document.querySelectorAll('#nav-al-title'),5000);
+    //    .useXpath()
+    //    .waitForElementVisible($x(signInButtonPath),10000)
+        //.click($x(signInButtonPath));
 
  
 
-  return 'pending';
+  
 });
 
 
@@ -25,3 +41,4 @@ Then('I am logged in', function () {
   // Write code here that turns the phrase above into concrete actions
   return 'pending';
 });
+

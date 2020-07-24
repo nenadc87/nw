@@ -12,6 +12,7 @@ Scenario: Using labelfor
   Then I type "something" into Favourite Animal locating the input field with the for attribute of the label
   And Check if input really changed to "something"
 
+
 Scenario: Amazon 
   Given I open an Amazon web- page 
   And I login with user "username" and password "password" 
