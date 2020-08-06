@@ -44,7 +44,7 @@ module.exports = {
         start_process : true,
         server_path: geckodriver.path,
         cli_args: [
-          "--log", "debug", "--port=5959"
+          "--log", "debug"//, "--port=5959"
         ],
         port: 5959
       },

@@ -1,4 +1,4 @@
-const Logger = require('../util/logger.js');
+const {Logger} = require('../utils');
 
 module.exports = class {
 
@@ -41,7 +41,7 @@ module.exports = class {
   }
 
   unhandled(err) {
-    Logger.warn('unhandledRejection:');
+    Logger.warn(`unhandledRejection: ${err.message}`);
     this.uncaught(err);
   }
 
@@ -59,7 +59,7 @@ module.exports = class {
           resolve();
         }
       }).then(_ => {
-        if (this.testRunner.result) {
+        if (this.testRunner.publishReport) {
           this.testRunner.publishReport = false;
 
           return Promise.all([
@@ -85,12 +85,8 @@ module.exports = class {
     const WebDriver = require('./webdriver-server.js');
 
     this.getCurrentPromise(err)
-      .then(_ => {
-        return WebDriver.stopInstances();
-      })
-      .then(_ => {
-        this.closeProcess(err);
-      });
+      .then(_ => WebDriver.stopInstances())
+      .then(_ => this.closeProcess(err));
   }
 
   closeProcess(err) {

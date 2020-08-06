@@ -1,6 +1,6 @@
 const child_process = require('child_process');
 const EventEmitter = require('events');
-const Logger = require('../../util/logger.js');
+const {Logger, isObject} = require('../../utils');
 const ProcessListener = require('../../runner/process-listener.js');
 
 let prevIndex = 0;
@@ -51,7 +51,18 @@ class ChildProcess extends EventEmitter {
    * @returns {Array}
    */
   getArgs() {
-    let args = [this.mainModule];
+    const args = [];
+
+    if (isObject(this.settings.test_workers)) {
+      const {node_options} = this.settings.test_workers;
+      if (node_options === 'auto' || node_options === 'inherit' || node_options === true) {
+        args.push.apply(args, process.execArgv);
+      } else if (Array.isArray(node_options)) {
+        args.push.apply(args, node_options);
+      }
+    }
+
+    args.push(this.mainModule);
     args.push.apply(args, this.args);
     args.push('--parallel-mode');
 
@@ -77,7 +88,7 @@ class ChildProcess extends EventEmitter {
       if (this.settings.disable_colors) {
         childProcessLabel = ' ' + this.environment + ' ';
       } else {
-        childProcessLabel = Logger.colors[color_pair[1]](` ${this.environment}`, Logger.colors.background[color_pair[0]]);
+        childProcessLabel = Logger.colors[color_pair[1]](` ${this.environment} `, Logger.colors.background[color_pair[0]]);
       }
 
       let lines = data.split('\n').map(line => {
@@ -96,7 +107,7 @@ class ChildProcess extends EventEmitter {
     }
   }
 
-  run(colors) {
+  run(colors, type) {
     this.availColors = colors;
 
     let cliArgs = this.getArgs();
@@ -112,6 +123,7 @@ class ChildProcess extends EventEmitter {
         env.__NIGHTWATCH_ENV = this.environment;
         env.__NIGHTWATCH_ENV_KEY = this.itemKey;
         env.__NIGHTWATCH_ENV_LABEL = this.env_itemKey;
+        env.__NIGHTWATCH_PARALLEL_TYPE = type;
 
         this.child = child_process.spawn(process.execPath, cliArgs, {
           cwd: process.cwd(),
